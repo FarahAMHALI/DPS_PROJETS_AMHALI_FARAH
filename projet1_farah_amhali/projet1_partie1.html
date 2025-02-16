@@ -1,1 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM - Questionnaire à Choix Multiples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
 
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .score, .timer {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .quiz {
+            margin-top: 20px;
+        }
+
+        .question {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            margin-bottom: 20px;
+        }
+
+        .option {
+            display: block;
+            margin: 5px 0;
+        }
+
+        .next-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .next-button:hover {
+            background-color: #218838;
+        }
+
+        .final-score {
+            font-size: 2em;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .finished-message {
+            font-size: 1.5em;
+            text-align: center;
+            margin-top: 20px;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QCM - Questionnaire à Choix Multiples</h1>
+        <div id="timer" class="timer">Temps restant: <span id="time">10</span> secondes</div>
+        <div id="quiz" class="quiz"></div>
+        <button id="next" class="next-button" style="display: none;">Suivant</button>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "Quelle est l'unité de base de la vie ?",
+                options: ["Organe", "Cellule", "Tissu", "Système"],
+                answer: 1
+            },
+            {
+                question: "Quel organe est responsable de la circulation du sang ?",
+                options: ["Poumons", "Cœur", "Foie", "Rein"],
+                answer: 1
+            },
+            {
+                question: "Quelle est la fonction principale des globules rouges ?",
+                options: ["Combattre les infections", "Transporter l'oxygène", "Coaguler le sang", "Produire des anticorps"],
+                answer: 1
+            },
+            {
+                question: "Quel est le processus par lequel les plantes fabriquent leur propre nourriture ?",
+                options: ["Respiration", "Photosynthèse", "Fermentation", "Digestion"],
+                answer: 1
+            },
+            {
+                question: "Quel type de cellule est responsable de la transmission des signaux nerveux ?",
+                options: ["Cellule musculaire", "Neurone", "Cellule épithéliale", "Globule blanc"],
+                answer: 1
+            },
+            {
+                question: "Quelle est la principale source d'énergie pour les êtres vivants ?",
+                options: ["Protéines", "Lipides", "Glucides", "Vitamines"],
+                answer: 2
+            },
+            {
+                question: "Quel est le rôle des enzymes dans le corps ?",
+                options: ["Stocker l'énergie", "Accélérer les réactions chimiques", "Transporter l'oxygène", "Protéger contre les maladies"],
+                answer: 1
+            },
+            {
+                question: "Quelle partie de la cellule contient le matériel génétique ?",
+                options: ["Cytoplasme", "Membrane cellulaire", "Noyau", "Mitochondrie"],
+                answer: 2
+            },
+            {
+                question: "Quel est le nom du processus par lequel les cellules se divisent pour former de nouvelles cellules ?",
+                options: ["Mitose", "Méiose", "Fission", "Bourgeonnement"],
+                answer: 0
+            },
+            {
+                question: "Quel nutriment est essentiel pour la croissance et la réparation des tissus ?",
+                options: ["Glucides", "Vitamines", "Protéines", "Minéraux"],
+                answer: 2
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const timeLimit = 10;
+
+        function startQuiz() {
+            loadQuestion();
+            startTimer();
+        }
+
+        function loadQuestion() {
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.innerHTML = '';
+
+            const currentQuestion = questions[currentQuestionIndex];
+            const questionElement = document.createElement('div');
+            questionElement.classList.add('question');
+            questionElement.innerHTML = `<h2>Question ${currentQuestionIndex + 1}: ${currentQuestion.question}</h2>`;
+            
+            const optionsElement = document.createElement('div');
+            optionsElement.classList.add('options');
+
+            currentQuestion.options.forEach((option, optionIndex) => {
+                const optionElement = document.createElement('label');
+                optionElement.classList.add('option');
+                optionElement.innerHTML = `
+                    <input type="radio" name="option" value="${optionIndex}">
+                    ${option}
+                `;
+                optionsElement.appendChild(optionElement);
+            });
+
+            questionElement.appendChild(optionsElement);
+            quizContainer.appendChild(questionElement);
+            document.getElementById('next').style.display = 'block';
+        }
+
+        function startTimer() {
+            let timeLeft = timeLimit;
+            document.getElementById('time').textContent = timeLeft;
+
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time').textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswer();
+                    showNextQuestion();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector('input[name="option"]:checked');
+            if (selectedOption && parseInt(selectedOption.value) === questions[currentQuestionIndex].answer) {
+                score++;
+            }
+        }
+
+        function showNextQuestion() {
+            clearInterval(timer);
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+                startTimer();
+            } else {
+                showScore();
+            }
+        }
+
+        function showScore() {
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.innerHTML = `<h2 class="final-score">Votre score est ${score} sur ${questions.length}</h2>`;
+            document.getElementById('next').style.display = 'none';
+            const finishedMessage = document.createElement('div');
+            finishedMessage.classList.add('finished-message');
+            finishedMessage.textContent = "QCM terminé ! Merci d'avoir participé.";
+            quizContainer.appendChild(finishedMessage);
+            window.scrollTo(0, 0);
+        }
+
+        document.getElementById('next').addEventListener('click', () => {
+            checkAnswer();
+            showNextQuestion();
+        });
+
+        startQuiz();
+    </script>
+</body>
+</html>

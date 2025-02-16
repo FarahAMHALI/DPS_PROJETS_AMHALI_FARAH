@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .form-api {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            margin: auto;
+            color: #333;
+        }
+
+        .form-api label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .form-api input, .form-api select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+
+        .btn {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            background-color: #2c3e50;
+        }
+
+        #quiz-container {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            color: black;
+            max-width: 500px;
+            margin: auto;
+            display: none;
+        }
+
+        .question {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .answers {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .answers li {
+            padding: 10px;
+            margin: 5px;
+            background: #3498db;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .answers li:hover {
+            background: #2c3e50;
+        }
+
+        .correct {
+            background: #27ae60 !important;
+        }
+
+        .wrong {
+            background: #e74c3c !important;
+        }
+    </style>
+</head>
+<body>
+
+    <form action="" method="post" class="form-api">
+        <h2 class="form-signin-heading">API Helper</h2>
+
+        <label for="trivia_amount">Number of Questions:</label>
+        <input type="number" name="trivia_amount" id="trivia_amount" class="form-control" min="1" max="50" value="10">
+
+        <br>
+
+        <label for="trivia_category">Select Category: </label>
+        <select name="trivia_category" class="form-control">
+            <option value="any">Any Category</option>
+            <option value="9">General Knowledge</option><option value="10">Entertainment: Books</option><option value="11">Entertainment: Film</option><option value="12">Entertainment: Music</option><option value="13">Entertainment: Musicals &amp; Theatres</option><option value="14">Entertainment: Television</option><option value="15">Entertainment: Video Games</option><option value="16">Entertainment: Board Games</option><option value="17">Science &amp; Nature</option><option value="18">Science: Computers</option><option value="19">Science: Mathematics</option><option value="20">Mythology</option><option value="21">Sports</option><option value="22">Geography</option><option value="23">History</option><option value="24">Politics</option><option value="25">Art</option><option value="26">Celebrities</option><option value="27">Animals</option><option value="28">Vehicles</option><option value="29">Entertainment: Comics</option><option value="30">Science: Gadgets</option><option value="31">Entertainment: Japanese Anime &amp; Manga</option><option value="32">Entertainment: Cartoon &amp; Animations</option>
+        </select>
+
+        <br>
+
+        <label for="trivia_difficulty">Select Difficulty: </label>
+        <select name="trivia_difficulty" class="form-control">
+            <option value="any">Any Difficulty</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+        </select>
+
+        <br>
+
+        <label for="trivia_type">Select Type: </label>
+        <select name="trivia_type" class="form-control">
+            <option value="any">Any Type</option>
+            <option value="multiple">Multiple Choice</option>
+            <option value="boolean">True / False</option>
+        </select>
+
+        <br>
+
+        <label for="trivia_encode">Select Encoding: </label>
+        <select name="trivia_encode" class="form-control">
+            <option value="default">Default Encoding</option>
+            <option value="urlLegacy">Legacy URL Encoding</option>
+            <option value="url3986">URL Encoding (RFC 3986)</option>
+            <option value="base64">Base64 Encoding</option>
+        </select>
+
+        <input type="hidden" name="token" value="9580efd9158dad6de1add06bba37b357128793f1de3e306a1f3d5bd2a774ad1e">
+
+        <br>
+
+        <button class="btn" type="button" onclick="generateQuiz()">Generate API URL</button>
+    </form>
+
+    <div id="quiz-container"></div>
+
+    <script>
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questions = [];
+        let timeLeft = 10; // Temps de 10 secondes par question
+    
+        function generateQuiz() {
+            let amount = document.getElementById("trivia_amount").value;
+            let category = document.querySelector("[name='trivia_category']").value;
+            let difficulty = document.querySelector("[name='trivia_difficulty']").value;
+    
+            let apiUrl = `https://opentdb.com/api.php?amount=${amount}`;
+            if (category !== "any") apiUrl += `&category=${category}`;
+            if (difficulty !== "any") apiUrl += `&difficulty=${difficulty}`;
+    
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    questions = data.results;
+                    displayQuestion();
+                })
+                .catch(error => console.error("Erreur lors de la récupération des questions :", error));
+        }
+    
+        function displayQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                document.getElementById("quiz-container").innerHTML = `<h2>Quiz terminé ! Score: ${score}/${questions.length}</h2>`;
+                return;
+            }
+    
+            let quizContainer = document.getElementById("quiz-container");
+            quizContainer.innerHTML = "";
+            quizContainer.style.display = "block";
+    
+            let question = questions[currentQuestionIndex];
+            let questionDiv = document.createElement("div");
+            questionDiv.classList.add("question");
+            questionDiv.innerHTML = `${currentQuestionIndex + 1}. ${question.question}`;
+    
+            let answersList = document.createElement("ul");
+            answersList.classList.add("answers");
+    
+            let answers = [...question.incorrect_answers, question.correct_answer];
+            answers.sort(() => Math.random() - 0.5);
+    
+            // Ajout des options de réponse sous forme de radio
+            answers.forEach((answer, index) => {
+                let answerItem = document.createElement("li");
+                let answerInput = document.createElement("input");
+                answerInput.type = "radio";
+                answerInput.name = "answer";
+                answerInput.value = answer;
+                answerInput.id = `answer${index}`;
+    
+                let label = document.createElement("label");
+                label.setAttribute("for", `answer${index}`);
+                label.textContent = answer;
+    
+                answerItem.appendChild(answerInput);
+                answerItem.appendChild(label);
+                answersList.appendChild(answerItem);
+            });
+    
+            quizContainer.appendChild(questionDiv);
+            quizContainer.appendChild(answersList);
+    
+            let submitButton = document.createElement("button");
+            submitButton.classList.add("btn");
+            submitButton.textContent = "Soumettre la réponse";
+            submitButton.onclick = () => checkAnswer(question.correct_answer);
+            quizContainer.appendChild(submitButton);
+    
+            startTimer();
+        }
+    
+        function checkAnswer(correct) {
+            // Vérifier quelle réponse a été sélectionnée
+            let selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            if (selectedAnswer) {
+                if (selectedAnswer.value === correct) {
+                    score++;
+                }
+            }
+    
+            // Passer à la question suivante après soumission
+            currentQuestionIndex++;
+            resetTimer();
+            displayQuestion();
+        }
+    
+        function startTimer() {
+            let timerDiv = document.createElement("div");
+            timerDiv.id = "timer";
+            timerDiv.textContent = `Temps restant: ${timeLeft} secondes`;
+            document.getElementById("quiz-container").appendChild(timerDiv);
+    
+            let timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").textContent = `Temps restant: ${timeLeft} secondes`;
+    
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswer(); // Soumettre automatiquement la réponse si le temps est écoulé
+                }
+            }, 1000);
+        }
+    
+        function resetTimer() {
+            timeLeft = 10; // Réinitialiser le timer pour la prochaine question
+            document.getElementById("timer").textContent = `Temps restant: ${timeLeft} secondes`;
+        }
+    </script>
+
+</body>
+</html>

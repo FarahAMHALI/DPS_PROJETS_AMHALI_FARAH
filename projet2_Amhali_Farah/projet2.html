@@ -1,1 +1,136 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <style>
+        body{
+            background: #352f5b;
+        }
+        .container{
+            max-width: 400px;
+        }
+        input[type=text],
+        input[type=text]:focus{
+            color: #fff;
+            border: none;
+            background: rgba(0,0,0,0.2);
+            max-width: 400px;
+        }
+        .todos li{
+            background: #423a6f;
+        }
+        .delete{
+            cursor: pointer;
+        }
+        
+        .supprimer {
+            padding: 15px 20px; 
+            background: #423a6f;
+            display: flex; 
+            margin-top: 1px;
+            justify-content: space-between; 
+        }
+        
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+    <title>Todo List</title>
+</head>
+<body>
 
+<div class="container">
+
+    <header class="text-center text-light my-4">
+        <h1 class="mb-4">Todo List</h1>
+        <form class="search">
+            <input class="form-control m-auto" type="text" name="search" placeholder="search todos" />
+        </form>
+    </header>
+
+    <ul class="list-group todos mx-auto text-light">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>play mariokart</span>
+            <i class="far fa-trash-alt delete"></i>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>defeat ganon in zelda</span>
+            <i class="far fa-trash-alt delete"></i>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>make a veggie pie</span>
+            <i class="far fa-trash-alt delete"></i>
+        </li>
+    </ul>
+
+    <form class="add text-center my-4">
+        <label class="text-light">Add a new todo...</label>
+        <input class="form-control m-auto" type="text" name="add" />
+    </form>
+
+</div>
+
+
+<script >
+    const formAjoute = document.querySelector('.add'); // Assurez-vous que c'est bien un <form>
+        const activities = document.querySelector('.todos');
+        const elementRecherche = document.querySelector('.search input');
+        
+        formAjoute.addEventListener('submit', (event) => {
+            event.preventDefault(); // Empêche le rafraîchissement de la page
+        
+            const newelement = formAjoute.add.value.trim(); // Vérifier si 'add' est bien l'attribut 'name' de l'input
+        
+            if (newelement.length !== 0) {
+                const newTaskHTML = `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>${newelement}</span>
+                        <i class="far fa-trash-alt delete"></i>
+                    </li>
+                `;
+                activities.innerHTML += newTaskHTML;
+                formAjoute.reset();
+            }
+        });
+        
+        activities.addEventListener('click', (event) => {
+            if (event.target.classList.contains('delete')) {
+                event.target.parentElement.remove();
+            }
+        });
+        
+        elementRecherche.addEventListener('input', () => {
+            
+            const motRecherche = elementRecherche.value.toLowerCase();
+            const taskItems = activities.querySelectorAll('li');
+        
+            taskItems.forEach(task => {
+                const taskElement = task.querySelector('span');
+                if(taskElement){
+                    const taskText = taskElement.textContent.toLowerCase();
+                    if (taskText.includes(motRecherche)) {
+                        task.classList.remove('hidden');
+                        
+                    } else {
+                        task.classList.add('hidden');
+            
+                    }
+                    
+                };
+            });
+        });
+        
+        const foorm = document.querySelector('.search');
+        
+        foorm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            
+            });
+        
+</script>
+</body>
+</html>
