@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Tâches</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+        }
+        .active {
+            font-weight: bold;
+            background-color: lightblue;
+        }
+        .done {
+            text-decoration: line-through;
+            color: gray;
+        }
+        button {
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .filter-btn {
+            background-color: #ddd;
+        }
+        .filter-btn.active {
+            background-color: lightblue;
+        }
+        .complete-btn {
+            background-color: green;
+            color: white;
+        }
+        .complete-btn:hover {
+            background-color: darkgreen;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <h2>Gestion des Tâches</h2>
+
+        <!-- Affichage du nombre total de tâches -->
+        <p>Total des tâches à faire : {{ totalTasks }}</p>
+
+        <!-- Boutons de filtre -->
+        <div>
+            <button @click="filter = 'all'" :class="{ active: filter === 'all' }" class="filter-btn">Toutes</button>
+            <button @click="filter = 'pending'" :class="{ active: filter === 'pending' }" class="filter-btn">À faire</button>
+            <button @click="filter = 'completed'" :class="{ active: filter === 'completed' }" class="filter-btn">Terminées</button>
+        </div>
+
+        <!-- Liste des tâches filtrées -->
+        <ul>
+            <li v-for="task in filteredTasks" :key="task.id">
+                <h3 :class="{ done: task.completed }">{{ task.title }}</h3>
+                <p>{{ task.description }}</p>
+
+                <!-- Bouton pour marquer comme terminée -->
+                <button v-show="!task.completed" class="complete-btn" @click="markAsCompleted(task.id)">
+                    Marquer comme terminée
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    tasks: [],
+                    filter: "all"
+                };
+            },
+            computed: {
+                filteredTasks() {
+                    if (this.filter === "pending") {
+                        return this.tasks.filter(task => !task.completed);
+                    } else if (this.filter === "completed") {
+                        return this.tasks.filter(task => task.completed);
+                    }
+                    return this.tasks;
+                },
+                totalTasks() {
+                    // Calculer uniquement les tâches qui ne sont pas terminées
+                    return this.tasks.filter(task => !task.completed).length;
+                }
+            }
+            ,
+            methods: {
+                markAsCompleted(taskId) {
+                    const task = this.tasks.find(task => task.id === taskId);
+                    if (task) {
+                        task.completed = true;
+                        this.saveTasks();
+                    }
+                },
+                saveTasks() {
+                    localStorage.setItem("taskLIst", JSON.stringify(this.tasks));
+                }
+            },
+            mounted() {
+                const savedTasks = localStorage.getItem("taskList");
+                if (savedTasks) {
+                    this.tasks = JSON.parse(savedTasks);
+                } else {
+                    fetch("taskList.json")
+                        .then(response => response.json())
+                        .then(data => {
+                            this.tasks = data;
+                            this.saveTasks(); // Sauvegarde initiale
+                        });
+                }
+            }
+        });
+
+        app.mount("#app");
+    </script>
+
+</body>
+</html>

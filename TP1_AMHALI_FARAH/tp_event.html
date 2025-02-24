@@ -1,1 +1,92 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Manipulation de Vue</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        button {
+            border-radius: 10px;
+            width: 100px;
+            height: 50px;
+        }
+        p {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="monapp">
+    <button @click="changerTexte" :style="{ backgroundColor: couleur }">
+        {{ titre }}
+    </button><br>
+</div>
+
+<div id="monapp2">
+    <button @click="incrementer">++</button>
+    {{ value }}
+    <button @click="decrementer">--</button>
+</div>
+
+<!-- Nouveau champ de saisie -->
+<div id="monapp3">
+    <input type="text" v-model="texte" @input="verifierTexte" placeholder="Saisissez du texte sans espace" />
+    <p v-show="messageErreur">⚠️ Pas d'espace autorisé !</p>
+</div>
+
+<script>
+    const appli = {
+        data() {
+            return {
+                titre: "Cliquez moi!",  
+                couleur: "lightblue"    
+            };
+        },
+        methods: {
+            changerTexte() {
+                this.titre = (this.titre === "Cliquez moi!") ? "Cliqué!" : "Cliquez moi!";
+                this.couleur = (this.couleur === "lightblue") ? "lightgreen" : "lightblue";
+            }
+        }
+    };
+
+    const appli2 = {
+        data() {
+            return {
+                value: 0
+            };
+        },
+        methods: {
+            incrementer() {
+                this.value++;
+            },
+            decrementer() {
+                this.value--;
+            }
+        }
+    };
+
+    const appli3 = {
+        data() {
+            return {
+                texte: "",
+                messageErreur: false
+            };
+        },
+        methods: {
+            verifierTexte() {
+                this.messageErreur = this.texte.includes(" ");
+            }
+        }
+    };
+
+    Vue.createApp(appli).mount("#monapp");
+    Vue.createApp(appli2).mount("#monapp2");
+    Vue.createApp(appli3).mount("#monapp3");
+</script>
+
+</body>
+</html>

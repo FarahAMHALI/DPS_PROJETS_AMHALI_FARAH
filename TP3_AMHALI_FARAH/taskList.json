@@ -1,0 +1,63 @@
+[
+    {
+        "id": 1,
+        "title": "Faire les courses",
+        "description": "Acheter des légumes, du pain et du lait.",
+        "completed": false
+    },
+    {
+        "id": 2,
+        "title": "Répondre aux emails",
+        "description": "Répondre à tous les emails en attente.",
+        "completed": false
+    },
+    {
+        "id": 3,
+        "title": "Aller à la salle de sport",
+        "description": "Faire une séance de cardio de 30 minutes.",
+        "completed": false
+    },
+    {
+        "id": 4,
+        "title": "Faire la vaisselle",
+        "description": "Laver toute la vaisselle de la journée.",
+        "completed": false
+    },
+    {
+        "id": 5,
+        "title": "Étudier pour l'examen",
+        "description": "Revoir les chapitres 3 et 4 du cours.",
+        "completed": false
+    },
+    {
+        "id": 6,
+        "title": "Lire un livre",
+        "description": "Lire 30 pages du livre 'Le nom de la rose'.",
+        "completed": false
+    },
+    {
+        "id": 7,
+        "title": "Appeler le médecin",
+        "description": "Prendre rendez-vous pour un contrôle médical.",
+        "completed": false
+    },
+    {
+        "id": 8,
+        "title": "Faire du ménage",
+        "description": "Passer l'aspirateur et nettoyer la salle de bain.",
+        "completed": false
+    },
+    {
+        "id": 9,
+        "title": "Préparer le dîner",
+        "description": "Faire une recette de pâtes à la sauce tomate.",
+        "completed": false
+    },
+    {
+        "id": 10,
+        "title": "Réparer le vélo",
+        "description": "Changer la chambre à air de la roue avant.",
+        "completed": false
+    }
+  ]
+  
